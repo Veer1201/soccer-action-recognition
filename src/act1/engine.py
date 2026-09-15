@@ -11,3 +11,7 @@ class Value:
         out = Value(self.data + other.data, _children=(self, other), _op='+')
         return out
     
+    def __mul__(self, other):
+        out = Value(self.data * other.data, _children=(self, other), _op='*')
+        return out
+    
