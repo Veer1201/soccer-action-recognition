@@ -31,6 +31,23 @@ class Value:
         out._backward = _backward
         return out
     
+    def __pow__(self, n):
+        out = Value(self.data ** n, _children=(self,), _op='**')
+        
+        def _backward():
+            self.grad += n * (self.data ** (n - 1)) * out.grad
+        
+        out._backward = _backward
+        return out
+    
+    def __sub__(self, other):
+        other = other if isinstance(other, Value) else Value(other)
+        return self + (other * (-1))
+    
+    def __truediv__(self, other):
+        other = other if isinstance(other, Value) else Value(other)
+        return self * (other ** (-1))
+    
     def backward(self):
         topo = []
         visited = set()
