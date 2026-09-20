@@ -1,5 +1,5 @@
 import numpy as np
-from act1.engine import Value
+from engine import Value
 
 class Neuron:
 
