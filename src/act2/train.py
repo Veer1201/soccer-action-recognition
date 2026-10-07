@@ -15,7 +15,7 @@ def train(frames_root, num_epochs=10, batch_size=32, lr=1e-3):
 
     model = CNN2D(num_classes=101).to(device)
 
-    dataloader = get_dataloader(frames_root, batch_size=batch_size)
+    train_loader, val_loader = get_dataloader(frames_root, batch_size=batch_size)
 
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
@@ -26,7 +26,7 @@ def train(frames_root, num_epochs=10, batch_size=32, lr=1e-3):
         correct = 0
         total = 0
 
-        for images, labels in tqdm(dataloader, desc=f"Epoch {epoch+1}/{num_epochs}"):
+        for images, labels in tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}"):
              images = images.to(device)
              labels = labels.to(device)
 
@@ -42,9 +42,31 @@ def train(frames_root, num_epochs=10, batch_size=32, lr=1e-3):
              correct += (predicted == labels).sum().item()
              total += labels.size(0)
 
-        epoch_loss = running_loss / len(dataloader)
-        epoch_acc = correct / total * 100
-        print(f"Epoch {epoch+1}/{num_epochs} - Loss: {epoch_loss:4f} Acc: {epoch_acc:2f}%")
+        train_loss = running_loss / len(train_loader)
+        train_acc = correct / total * 100
+
+        model.eval()
+        val_loss = 0.0
+        val_correct = 0.0
+        val_total = 0
+
+        with torch.no_grad():
+            for images, labels in val_loader:
+                images = images.to(device)
+                labels = labels.to(device)
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+                val_loss += loss.item()
+                predicted = outputs.argmax(dim=1)
+                val_correct += (predicted == labels).sum().item()
+                val_total += labels.size(0)
+
+        val_loss = val_loss / len(val_loader)
+        val_acc = val_correct / total * 100
+
+        print(f"Epoch {epoch+1}/{num_epochs} — "
+              f"Train Loss: {train_loss:.4f} Train Acc: {train_acc:.2f}% — "
+              f"Val Loss: {val_loss:.4f} Val Acc: {val_acc:.2f}%")
 
 if __name__ == "__main__":
     train("src/act2/data/ucf101/frames", num_epochs=10)
