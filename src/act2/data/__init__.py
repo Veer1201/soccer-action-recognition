@@ -1,6 +1,8 @@
 import os
+import random
+
 from PIL import Image
-from torch.utils.data import Dataset, DataLoader, random_split
+from torch.utils.data import Dataset, DataLoader, random_split, Subset
 from torchvision import transforms
 
 class UCF101Dataset(Dataset):
@@ -45,15 +47,20 @@ def get_transforms():
             )
         ])
     
-def get_dataloader(frames_root, batch_size=32, val_split=0.2):
+def get_dataloader(frames_root, batch_size=32, val_split=0.2, seed = 42):
         dataset = UCF101Dataset(frames_root, transform=get_transforms())
-        val_size = int(len(dataset) * val_split)
-        train_size = len(dataset) - val_size
 
-        train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
-        
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-        val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+        group_ids = sorted(set(s[2] for s in dataset.samples))
+        random.Random(seed).shuffle(group_ids)
+
+        val_count = int(len(group_ids) * val_split)
+        val_groups = set(group_ids[:val_count])
+
+        train_idx = [i for i, s in enumerate(dataset.samples) if s[2] not in val_groups]
+        val_idx = [i for i, s in enumerate(dataset.samples) if s[2] in val_groups]
+
+        train_loader = DataLoader(Subset(dataset, train_idx), batch_size=batch_size, shuffle=True)
+        val_loader = DataLoader(Subset(dataset, val_idx), batch_size=batch_size, shuffle=False)
 
         return train_loader, val_loader
     
