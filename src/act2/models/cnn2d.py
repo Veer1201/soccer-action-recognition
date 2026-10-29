@@ -21,13 +21,14 @@ class CNN2D(nn.Module):
 
         self.relu = nn.ReLU()
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.classifier = nn.Linear(64 * 56 * 56, num_classes)
+        self.global_pool = nn.AdaptiveAvgPool2d(1)
+        self.classifier = nn.Linear(64, num_classes)
 
 
     def forward(self, x):
         x = self.pool(self.relu(self.conv1(x)))
         x = self.pool(self.relu(self.conv2(x)))
-
+        x = self.global_pool(x)
         x = x.view(x.size(0), -1)
         return self.classifier(x)
     
