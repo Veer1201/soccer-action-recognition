@@ -9,7 +9,7 @@ from src.act2.data import get_dataloader
 
 from tqdm import tqdm
 
-def train(frames_root, num_epochs=10, batch_size=32, lr=1e-3):
+def train(frames_root, num_epochs=5, batch_size=32, lr=1e-3):
     device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
     print(f"Training on: {device}")
 
