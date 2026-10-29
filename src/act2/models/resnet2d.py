@@ -1,6 +1,7 @@
 import torch.nn as nn
 from torchvision.models import resnet18, ResNet18_Weights
 
+
 def build_resnet18(num_classes = 101, freeze_backbone = True):
     model = resnet18(weights = ResNet18_Weights.DEFAULT)
 
