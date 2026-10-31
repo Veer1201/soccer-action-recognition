@@ -16,6 +16,8 @@ def build_model(model_name, num_classes=101):
         return CNN2D(num_classes=num_classes)
     elif model_name == "resnet18_frozen":
         return build_resnet18(num_classes=num_classes, freeze_backbone=True)
+    elif model_name == "resnet18_finetune":
+        return build_resnet18(num_classes=num_classes, freeze_backbone=False)
     else:
         raise ValueError(f"Unknown model: {model_name}")
     
@@ -92,4 +94,4 @@ def train(frames_root, model_name="cnn2d", num_epochs=5, batch_size=32, lr=1e-3)
 
 
 if __name__ == "__main__":
-    train("src/act2/data/ucf101/frames", model_name="resnet18_frozen", num_epochs=3)
+    train("src/act2/data/ucf101/frames", model_name="resnet18_finetune", num_epochs=3, lr=1e-4)

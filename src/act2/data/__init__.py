@@ -37,15 +37,28 @@ class UCF101Dataset(Dataset):
             image = self.transform(image)
         return image, label
     
+
 def get_transforms(train=False):
-        return transforms.Compose([
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize(
-                mean=[0.485, 0.456, 0.406],
-                std=[0.229, 0.224, 0.225]
-            )
-        ])
+     normalize = transforms.Normalize(
+          mean=[0.485, 0.456, 0.406],
+          std=[0.229, 0.224, 0.225]
+     )
+
+     if train:
+          return transforms.Compose([
+               transforms.RandomResizedCrop(224, scale=(0.6, 1.0)),
+               transforms.RandomHorizontalFlip(),
+               transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+               transforms.ToTensor(),
+               normalize,
+          ])
+     else:
+          return transforms.Compose([
+               transforms.Resize((224, 224)),
+               transforms.ToTensor(),
+               normalize,
+          ])
+     
     
 def get_dataloader(frames_root, batch_size=32, val_split=0.2, seed = 42):
         train_ds = UCF101Dataset(frames_root, transform=get_transforms(train=True))
