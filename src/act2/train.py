@@ -38,6 +38,11 @@ def train(frames_root, model_name="cnn2d", num_epochs=5, batch_size=32, lr=1e-3)
 
     optimizer = torch.optim.Adam(trainable_params, lr=lr)
 
+    os.makedirs("checkpoints", exist_ok=True)
+    save_path = "checkpoints/" + model_name + "_best.pt"
+    best_val_acc = 0.0
+    best_epoch = 0
+
     for epoch in range(num_epochs):
         if frozen:
             model.eval()
@@ -91,6 +96,12 @@ def train(frames_root, model_name="cnn2d", num_epochs=5, batch_size=32, lr=1e-3)
         print(f"Epoch {epoch+1}/{num_epochs} — "
               f"Train Loss: {train_loss:.4f} Train Acc: {train_acc:.2f}% — "
               f"Val Loss: {val_loss:.4f} Val Acc: {val_acc:.2f}%")
+        
+        if val_acc > best_val_acc:
+            best_val_acc = val_acc
+            best_epoch = epoch + 1
+            torch.save(model.state_dict(), save_path)
+            print("Saved new best model:", round(val_acc, 2), "Best epoch: ", best_epoch)
 
 
 if __name__ == "__main__":
