@@ -36,4 +36,4 @@ def extract_all_frames(ucf_root, output_root, fps=1, dense=False, only_class=Non
 if __name__ == "__main__":
     ucf_root = "src/act2/data/ucf101/UCF-101"
     output_root = "src/act2/data/ucf101/frames_128x171"
-    extract_all_frames(ucf_root, output_root, dense=True, only_class="ApplyEyeMakeup")
+    extract_all_frames(ucf_root, output_root, dense=True)
