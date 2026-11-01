@@ -73,8 +73,8 @@ def get_dataloader(frames_root, batch_size=32, val_split=0.2, seed = 42):
         train_idx = [i for i, s in enumerate(train_ds.samples) if s[2] not in val_groups]
         val_idx = [i for i, s in enumerate(val_ds.samples) if s[2] in val_groups]
 
-        train_loader = DataLoader(Subset(train_ds, train_idx), batch_size=batch_size, shuffle=True)
-        val_loader = DataLoader(Subset(val_ds, val_idx), batch_size=batch_size, shuffle=False)
+        train_loader = DataLoader(Subset(train_ds, train_idx), batch_size=batch_size, shuffle=True, num_workers=4)
+        val_loader = DataLoader(Subset(val_ds, val_idx), batch_size=batch_size, shuffle=False, num_workers=4)
 
         return train_loader, val_loader
     
