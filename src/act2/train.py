@@ -1,6 +1,7 @@
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
 import torch
 import torch.nn as nn
@@ -20,7 +21,8 @@ def build_model(model_name, num_classes=101):
         return build_resnet18(num_classes=num_classes, freeze_backbone=False)
     else:
         raise ValueError(f"Unknown model: {model_name}")
-    
+
+
 def train(frames_root, model_name="cnn2d", num_epochs=5, batch_size=32, lr=1e-3):
     device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
     print(f"Training {model_name} on: {device}")
@@ -48,7 +50,7 @@ def train(frames_root, model_name="cnn2d", num_epochs=5, batch_size=32, lr=1e-3)
             model.eval()
         else:
             model.train()
-        
+
         running_loss = 0.0
         correct = 0
         total = 0
@@ -93,16 +95,25 @@ def train(frames_root, model_name="cnn2d", num_epochs=5, batch_size=32, lr=1e-3)
         val_loss = val_loss / len(val_loader)
         val_acc = val_correct / val_total * 100
 
-        print(f"Epoch {epoch+1}/{num_epochs} — "
-              f"Train Loss: {train_loss:.4f} Train Acc: {train_acc:.2f}% — "
-              f"Val Loss: {val_loss:.4f} Val Acc: {val_acc:.2f}%")
-        
+        print(
+            f"Epoch {epoch+1}/{num_epochs} — "
+            f"Train Loss: {train_loss:.4f} Train Acc: {train_acc:.2f}% — "
+            f"Val Loss: {val_loss:.4f} Val Acc: {val_acc:.2f}%"
+        )
+
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             best_epoch = epoch + 1
             torch.save(model.state_dict(), save_path)
-            print("Saved new best model:", round(val_acc, 2), "Best epoch: ", best_epoch)
+            print(
+                "Saved new best model:", round(val_acc, 2), "Best epoch: ", best_epoch
+            )
 
 
 if __name__ == "__main__":
-    train("src/act2/data/ucf101/frames", model_name="resnet18_finetune", num_epochs=3, lr=1e-4)
+    train(
+        "src/act2/data/ucf101/frames",
+        model_name="resnet18_finetune",
+        num_epochs=3,
+        lr=1e-4,
+    )

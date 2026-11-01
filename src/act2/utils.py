@@ -17,7 +17,7 @@ def extract_frames(video_path, output_dir, fps=1):
 
     for frame in container.decode(stream):
         if frame_count % interval == 0:
-            img = frame.to_ndarray(format='rgb24')
+            img = frame.to_ndarray(format="rgb24")
             tensor = torch.from_numpy(img).permute(2, 0, 1)
             frame_path = os.path.join(output_dir, f"frame_{saved_count:04d}.jpg")
             write_jpeg(tensor, frame_path)
