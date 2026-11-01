@@ -26,3 +26,21 @@ def extract_frames(video_path, output_dir, fps=1):
 
     container.close()
     return saved_count
+
+def extract_frames_dense(video_path, output_dir, height=128, width=171):
+    os.makedirs(output_dir, exist_ok=True)
+    container = av.open(video_path)
+    stream = container.streams.video[0]
+
+    saved_count = 0
+    for frame in container.decode(stream):
+        frame = frame.reformat(width=width, height=height, format="rgb24")
+        img = frame.to_ndarray()
+        tensor = torch.from_numpy(img).permute(2, 0, 1)
+
+        frame_path = os.path.join(output_dir, f"frame_{saved_count:04d}.jpg")
+        write_jpeg(tensor, frame_path)
+        saved_count += 1
+    
+    container.close()
+    return saved_count
