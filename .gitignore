@@ -1,0 +1,7 @@
+venv/
+
+src/act2/data/ucf101/
+__pycache__/
+.DS_Store
+
+checkpoints/
